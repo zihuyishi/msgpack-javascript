@@ -85,7 +85,7 @@ increaseObj.increment(3);
 document.writeln(increaseObj.getValue());
 
 /**
- 这种方式不被推荐
+ bad 
 */
 var Quo = function (string) {
 	this.status = string;
@@ -214,35 +214,9 @@ Cat.prototype.get_name = function () {
 	return this.says() + ' ' + this.name + ' ' + this.says();
 };
 Cat.prototype.type = 'Cat';
+Mammal.prototype.type = 'Dog';
+document.writeln(Cat.prototype.type);
 
-
-var msg_encoder = function () {
-	var that = {};
-	var obj = new Object();
-
-	that.push = function (name, data) {
-		obj[name] = (typeof data === 'function' && undefined) || data;
-	};
-
-	that.toString = function () {
-		return msgpack.pack(obj, true);
-	};
-	that.toArray = function () {
-		return msgpack.pack(obj);
-	}
-
-	return that;
-};
-var msg_decoder = function (data) {
-	var that = {};
-	var obj = msgpack.unpack(data);
-
-	that.get = function (name) {
-		return obj[name];
-	}
-
-	return that;
-};
 
 var mammal = function (spec) {
 	var that = {};
@@ -287,6 +261,15 @@ var cat = function (spec) {
 	return that;
 };
 
+var coolcat = function (spec) {
+	var that = cat(spec),
+		super_get_name = that.superior('get_name');
+	that.get_name = function (n) {
+		return 'like ' + super_get_name() + ' baby';
+	};
+	return that;
+};
+
 
 var myCat = cat ({name: 'Babel', saying: 'ba'});
 document.writeln(myCat.get_name());
@@ -301,3 +284,20 @@ document.writeln(unboxCat.get_name());
 
 var pureBoxCat = msgpack.pack(new Cat('saye'));
 var pureUnboxCat = msgpack.unpack(pureBoxCat);
+
+
+Function.prototype.bind = function(that) {
+	var method = this,
+	slice = Array.prototype.slice,
+	args = slice.apply(arguments, [1]);
+	return function () {
+		return method.apply(that, args.concat(slice.apply(arguments, [0])));
+	};
+};
+
+var f = function(num1, num2) {
+	return this.value + num1 + num2;
+}
+var x = f.bind({value: 0}, 1);
+alert(x(2));
+
