@@ -25,7 +25,7 @@ function printTextView(textView) {
 function printPassowrdView(passwordView) {
     printView(passwordView);
     document.writeln("the password of <b>" + passwordView.className + 
-        "</b> is <sub>" + passwordView.getText() + "</sub>");
+        "</b> is <i>" + passwordView.getText() + "</i>");
 }
 
 var encoder1 = msg_encoder();
@@ -72,6 +72,7 @@ printTextView(textView2);
 
 var passwordView1 = passwordView();
 passwordView1.append('123456');
+passwordView1.setFrame(RectMake(100, 50, 200, 40));
 var passwordEncoder = msg_encoder();
 passwordView1.encode(passwordEncoder);
 

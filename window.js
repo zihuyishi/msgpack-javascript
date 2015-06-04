@@ -43,6 +43,13 @@ var Controller = function () {
 };
 
 Controller.prototype.className = "Controller";
+Controller.prototype.superior = function (name) {
+    var that = this,
+        method = that[name];
+    return function() {
+        return method.apply(that, arguments);
+    }
+}
 /*
     @param encoder's type is msg_encoder
 */
@@ -173,34 +180,29 @@ var textView = function() {
 var passwordView = function() {
     var that = textView(),
         placeholder = '*',
-        password = "";
+        password = "",
+        super_encode = that.superior('encode'),
+        super_decode = that.superior('decode');
 
     function setPassword(password_) {
         password = password_;
         that.setText(password);
     }
 
-    var parent = function (method) {
-        var tmp = textView(),
-            slice = Array.prototype.slice,
-            args = slice.apply(arguments, [1]);
-        return tmp[method].apply(that, args);
-    }
-
     that.append = function (c) {
         setPassword(password + c);
     };
     that.clear = function () {
-        setPassowrd("");
+        setPassword("");
     };
 
     that.encode = function (encoder) {
-        parent('encode', encoder);
+        super_encode(encoder);
         encoder.push('password', password);
     };
     that.decode = function (decoder) {
-        parent('decode', decoder);
-        setPassowrd(decoder.get('password'));
+        super_decode(decoder);
+        setPassword(decoder.get('password'));
     }
 
     return that;
